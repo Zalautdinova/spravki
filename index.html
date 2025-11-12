@@ -1,231 +1,134 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Заказ справки</title>
-  <meta name="description" content="Заказать справку — форма" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявка на справку</title>
   <style>
-    :root{
-      --bg:#f5f7fb;
-      --card:#ffffff;
-      --accent:#0066ff;
-      --accent-pressed:#0050cc;
-      --muted:#667085;
-      --radius:12px;
-      --gap:14px;
-      --shadow: 0 10px 30px rgba(11, 22, 40, 0.08);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,var(--bg),#eef2f8 60%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:32px;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
 
-    .card{
-      width:100%;
-      max-width:520px;
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:28px;
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
     }
 
-    h1{
-      margin:0 0 8px 0;
-      font-size:20px;
-      color:#0b1a2b;
-      letter-spacing:0.1px;
-    }
-    p.lead{
-      margin:0 0 20px 0;
-      color:var(--muted);
-      font-size:14px;
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 24px;
     }
 
-    form .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:var(--gap);
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    label{
-      display:block;
-      font-size:13px;
-      color:#223;
-      margin-bottom:6px;
-      font-weight:600;
+    input, select, textarea {
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
     }
 
-    input[type="text"],
-    input[type="tel"],
-    select,
-    textarea {
-      width:100%;
-      box-sizing:border-box;
-      padding:10px 12px;
-      border:1px solid #e0e6f0;
-      border-radius:10px;
-      outline:none;
-      font-size:14px;
-      background:white;
-      transition:box-shadow .15s, border-color .15s;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color:var(--accent);
-      box-shadow:0 6px 18px rgba(6,102,255,0.08);
+    input:focus, select:focus, textarea:focus {
+      border-color: #0078d7;
+      outline: none;
     }
 
-    .full { grid-column: 1 / -1; }
-    textarea { min-height:96px; resize:vertical; }
-
-    .actions {
-      margin-top:18px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
+    button {
+      padding: 12px;
+      border: none;
+      background: #0078d7;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    button.primary {
-      background:var(--accent);
-      color:#fff;
-      border:0;
-      padding:11px 16px;
-      border-radius:10px;
-      font-weight:700;
-      cursor:pointer;
-      font-size:15px;
-      box-shadow: 0 8px 16px rgba(6,102,255,0.12);
+
+    button:hover {
+      background: #005fa3;
     }
-    button.primary:active{ background:var(--accent-pressed) }
-    button.primary[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none }
 
-    .note { color:var(--muted); font-size:13px; }
+    .success {
+      display: none;
+      text-align: center;
+      color: #007a34;
+      font-weight: bold;
+      margin-top: 20px;
+    }
 
-    .footer-small{ margin-top:16px; font-size:12px; color:#7a8697; text-align:center; }
-    @media (max-width:640px){
-      .card{padding:18px}
-      .row{grid-template-columns:1fr}
+    .error {
+      display: none;
+      text-align: center;
+      color: #d90000;
+      font-weight: bold;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <main class="card" role="main">
-    <h1>Заказ справки</h1>
-    <p class="lead">Заполните форму — заявка автоматически уйдёт на почту <strong>kamilzalautdinov@gmail.com</strong>.</p>
-
-    <!--
-      Важно: action — FormSubmit на нужную почту.
-      Скрытые поля: _captcha отключаем, _subject настраиваем,
-      _next подставим динамически через JS (чтобы работало на GitHub Pages).
-    -->
-    <form id="certForm" action="https://formsubmit.co/kamilzalautdinov@gmail.com" method="POST" novalidate>
-      <!-- FormSubmit required fields (one-time confirmation email will be sent на почту) -->
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_subject" value="Новая заявка на справку">
-      <!-- _next будет заполнен в JS как абсолютная ссылка на success.html -->
-      <input type="hidden" name="_next" id="fs-next" value="">
-
-      <div class="row" style="margin-bottom:12px;">
-        <div>
-          <label for="surname">Ваша фамилия*</label>
-          <input id="surname" name="surname" type="text" maxlength="55" required>
-        </div>
-        <div>
-          <label for="name">Ваше имя*</label>
-          <input id="name" name="name" type="text" maxlength="55" required>
-        </div>
-
-        <div>
-          <label for="patronymic">Ваше отчество*</label>
-          <input id="patronymic" name="patronymic" type="text" maxlength="55" required>
-        </div>
-        <div>
-          <label for="group">Ваша группа*</label>
-          <input id="group" name="group" type="text" maxlength="32" required>
-        </div>
-
-        <div class="full">
-          <label for="type">Тип справки*</label>
-          <select id="type" name="type" required>
-            <option value="Справка об обучении">Справка об обучении</option>
-            <option value="Справка о стипендии">Справка о стипендии</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="phone">Номер телефона*</label>
-          <input id="phone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" required>
-        </div>
-        <div>
-          <label for="copies">Количество копий (необязательно)</label>
-          <input id="copies" name="copies" type="text" placeholder="1">
-        </div>
-
-        <div class="full">
-          <label for="note">Ваши примечания к справке, цели справки</label>
-          <textarea id="note" name="note" maxlength="500" placeholder="Например: нужно для подачи в деканат, необходима печать и подпись"></textarea>
-        </div>
-      </div>
-
-      <div class="actions">
-        <div style="flex:1 1 auto;">
-          <button id="submitBtn" class="primary" type="submit">Заказать</button>
-        </div>
-        <div class="note">Поля, отмеченные *, обязательны.</div>
-      </div>
-
-      <div id="formMessage" class="footer-small" aria-live="polite"></div>
+  <div class="container">
+    <h1>Форма для запроса справки</h1>
+    <form id="spravkaForm">
+      <input type="text" name="surname" placeholder="Фамилия" required>
+      <input type="text" name="name" placeholder="Имя" required>
+      <input type="text" name="patronymic" placeholder="Отчество">
+      <input type="text" name="group" placeholder="Группа" required>
+      <input type="text" name="type" placeholder="Тип справки (учебная, соц. и т.д.)" required>
+      <input type="text" name="phone" placeholder="Телефон для связи" required>
+      <input type="number" name="copies" placeholder="Количество копий" required>
+      <textarea name="note" placeholder="Дополнительные сведения"></textarea>
+      <button type="submit">Отправить заявку</button>
     </form>
 
-    <p class="footer-small">После первой отправки на вашу почту придёт письмо от FormSubmit — подтвердите адрес (только один раз).</p>
-  </main>
+    <div class="success">✅ Заявка успешно отправлена!</div>
+    <div class="error">❌ Ошибка при отправке. Попробуйте позже.</div>
+  </div>
 
   <script>
-    // Подставляем абсолютный _next для FormSubmit (работает и на GitHub Pages)
-    (function(){
+    const scriptURL = "https://script.google.com/macros/s/AKfycbylmvAquPpRJfw7niB9h29Llk5hS-QTqfufdn74I-5FqNIfwjMQ7Zdq9eNBLiroCC0B/exec";
+    const form = document.getElementById("spravkaForm");
+    const success = document.querySelector(".success");
+    const error = document.querySelector(".error");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
       try {
-        const nextInput = document.getElementById('fs-next');
-        const loc = window.location;
-        // базовая папка (убираем возможный index.html)
-        let basePath = loc.pathname.replace(/\/[^\/]*$/, '/');
-        // если URL оканчивается на '/', basePath останется '/'
-        const nextUrl = loc.origin + basePath + 'success.html';
-        nextInput.value = nextUrl;
-      } catch(e){
-        console.warn('Не удалось подставить _next автоматически', e);
+        const response = await fetch(scriptURL, { method: "POST", body: formData });
+        if (response.ok) {
+          success.style.display = "block";
+          error.style.display = "none";
+          form.reset();
+        } else {
+          throw new Error("Network response was not ok");
+        }
+      } catch (err) {
+        success.style.display = "none";
+        error.style.display = "block";
+        console.error("Ошибка при отправке:", err);
       }
-    })();
-
-    // Маленькая UX-обработка: отключаем кнопку и показываем сообщение при отправке
-    (function(){
-      const form = document.getElementById('certForm');
-      const btn = document.getElementById('submitBtn');
-      const msg = document.getElementById('formMessage');
-
-      form.addEventListener('submit', function(ev){
-        // браузер сам проверит required; если все ок, показываем UX
-        btn.disabled = true;
-        btn.textContent = 'Отправка...';
-        msg.textContent = 'Почта отправляется — пожалуйста, подождите.';
-        // Если отправка будет заблокирована, вернуть кнопку через 6 сек
-        setTimeout(() => {
-          if (btn.disabled) {
-            btn.disabled = false;
-            btn.textContent = 'Заказать';
-            msg.textContent = 'Если отправка не прошла — обновите страницу и попробуйте снова.';
-          }
-        }, 6000);
-      }, false);
-    })();
+    });
   </script>
 </body>
 </html>
