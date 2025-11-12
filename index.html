@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заказ справки</title>
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: #f6f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    form {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-width: 420px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #222;
+    }
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #444;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    button {
+      width: 100%;
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+    button:hover {
+      background: #0050cc;
+    }
+    .success {
+      text-align: center;
+      color: green;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<form id="orderForm" method="POST" action="send.php">
+  <h2>Заказ справки</h2>
+
+  <label>Ваша фамилия*</label>
+  <input type="text" name="surname" required>
+
+  <label>Ваше имя*</label>
+  <input type="text" name="name" required>
+
+  <label>Ваше отчество*</label>
+  <input type="text" name="patronymic" required>
+
+  <label>Ваша группа*</label>
+  <input type="text" name="group" required>
+
+  <label>Тип справки*</label>
+  <select name="type" required>
+    <option value="о обучении">О обучении</option>
+    <option value="о стипендии">О стипендии</option>
+  </select>
+
+  <label>Номер телефона*</label>
+  <input type="tel" name="phone" required>
+
+  <label>Ваши примечания, количество копий, цели справки</label>
+  <textarea name="note"></textarea>
+
+  <button type="submit">Заказать</button>
+
+  <div id="result"></div>
+</form>
+
+</body>
+</html>
