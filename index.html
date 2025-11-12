@@ -2,133 +2,107 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Заявка на справку</title>
+  <title>Заявки</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      padding: 20px;
     }
-
-    .container {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 100%;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-      font-size: 24px;
-    }
-
     form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    input, select, textarea {
-      padding: 10px 14px;
-      border: 1px solid #ccc;
+      background: white;
+      padding: 15px;
       border-radius: 10px;
-      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
       width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
       box-sizing: border-box;
-      transition: border-color 0.2s;
     }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: #0078d7;
-      outline: none;
-    }
-
     button {
-      padding: 12px;
-      border: none;
-      background: #0078d7;
+      background: #007bff;
       color: white;
-      font-weight: bold;
-      font-size: 16px;
-      border-radius: 10px;
+      border: none;
       cursor: pointer;
-      transition: background 0.2s;
     }
-
     button:hover {
-      background: #005fa3;
+      background: #0056b3;
     }
-
-    .success {
-      display: none;
-      text-align: center;
-      color: #007a34;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-
-    .error {
-      display: none;
-      text-align: center;
-      color: #d90000;
-      font-weight: bold;
-      margin-top: 20px;
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Форма для запроса справки</h1>
-    <form id="spravkaForm">
-      <input type="text" name="surname" placeholder="Фамилия" required>
-      <input type="text" name="name" placeholder="Имя" required>
-      <input type="text" name="patronymic" placeholder="Отчество">
-      <input type="text" name="group" placeholder="Группа" required>
-      <input type="text" name="type" placeholder="Тип справки (учебная, соц. и т.д.)" required>
-      <input type="text" name="phone" placeholder="Телефон для связи" required>
-      <input type="number" name="copies" placeholder="Количество копий" required>
-      <textarea name="note" placeholder="Дополнительные сведения"></textarea>
-      <button type="submit">Отправить заявку</button>
-    </form>
 
-    <div class="success">✅ Заявка успешно отправлена!</div>
-    <div class="error">❌ Ошибка при отправке. Попробуйте позже.</div>
-  </div>
+  <h2>Отправить заявку</h2>
+  <form id="requestForm">
+    <input type="text" id="name" placeholder="Ваше имя" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <textarea id="message" placeholder="Сообщение" required></textarea>
+    <button type="submit">Отправить</button>
+  </form>
+
+  <h3>📋 Список заявок</h3>
+  <div id="requests"></div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbylmvAquPpRJfw7niB9h29Llk5hS-QTqfufdn74I-5FqNIfwjMQ7Zdq9eNBLiroCC0B/exec";
-    const form = document.getElementById("spravkaForm");
-    const success = document.querySelector(".success");
-    const error = document.querySelector(".error");
+    const form = document.getElementById('requestForm');
+    const requestsDiv = document.getElementById('requests');
 
-    form.addEventListener("submit", async (e) => {
+    // Загружаем заявки из localStorage
+    const loadRequests = () => {
+      const data = JSON.parse(localStorage.getItem('requests')) || [];
+      requestsDiv.innerHTML = '';
+      data.forEach((req, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <b>${req.name}</b> (${req.email})<br>
+          <small>${req.date}</small><br>
+          <p>${req.message}</p>
+        `;
+        requestsDiv.appendChild(card);
+      });
+    };
+
+    // Отправка заявки
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
 
-      try {
-        const response = await fetch(scriptURL, { method: "POST", body: formData });
-        if (response.ok) {
-          success.style.display = "block";
-          error.style.display = "none";
-          form.reset();
-        } else {
-          throw new Error("Network response was not ok");
-        }
-      } catch (err) {
-        success.style.display = "none";
-        error.style.display = "block";
-        console.error("Ошибка при отправке:", err);
-      }
+      if (!name || !email || !message) return alert('Заполните все поля!');
+
+      const newRequest = {
+        name,
+        email,
+        message,
+        date: new Date().toLocaleString(),
+      };
+
+      const data = JSON.parse(localStorage.getItem('requests')) || [];
+      data.push(newRequest);
+      localStorage.setItem('requests', JSON.stringify(data));
+
+      form.reset();
+      loadRequests();
     });
+
+    // При загрузке страницы — показать заявки
+    loadRequests();
   </script>
+
 </body>
 </html>
